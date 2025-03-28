@@ -1,5 +1,7 @@
 #include "Lexer.hpp"
 
+// 只是一個簡單的應用，在執行的時候可以在終端機互動輸入文字，並將輸入的句子依各文字轉換成對應的 Token
+
 int main()
 {
     Lexer lexer = Lexer();

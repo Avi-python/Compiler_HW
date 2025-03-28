@@ -10,7 +10,7 @@ public:
 
 };
 
-class Tag {
+class Tag { // Tag 應該也可以使用 Enum
 
 public:
     static int NUM;
