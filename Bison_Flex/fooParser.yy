@@ -3,6 +3,7 @@
 
 %code requires {
     #include <string>
+    #include <iostream>
     #include "FooLexer.hh"
 }
 
@@ -16,12 +17,43 @@
     #define yylex lexer.yylex
 }
 
-%token HELLO
-%token WORLD
+%token INTEGER
+%token IDENTIFIER
+%token ASSIGN
+%token L_PAREN
+%token R_PAREN
+%token ADD
+%token SUB
+%token MUL
+%token DIV
 
 %%
 
-hello_world: HELLO WORLD '!' { std::cout << "Goodbye " << $WORLD << '!' << std::endl; }
+assign
+    : IDENTIFIER ASSIGN expression { std::cout << $1 << " = "; }
+    ;
+
+expression
+    : expression ADD term { std::cout << " + "; }
+    | expression SUB term { std::cout << " - "; }
+    | term
+    ;
+
+term
+    : term MUL factor { std::cout << " * "; }
+    | term DIV factor { std::cout << " / "; }
+    | factor
+    ;
+
+factor
+    : number
+    | IDENTIFIER { std::cout << $1; }
+    | L_PAREN expression R_PAREN
+    ;
+
+number
+    : INTEGER { std::cout << $1; }
+    ;
 
 %%
 
