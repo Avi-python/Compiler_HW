@@ -30,7 +30,7 @@
 %%
 
 assign
-    : IDENTIFIER ASSIGN expression { std::cout << $1 << " = "; }
+    : IDENTIFIER ASSIGN expression ';' { std::cout << $1 << " = "; }
     ;
 
 expression
