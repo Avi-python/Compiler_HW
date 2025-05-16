@@ -1,17 +1,52 @@
 /********************** resword.h ******************/
+#ifndef RESWORD_H
+#define RESWORD_H
+
 #include <stdlib.h>
+#include "sym.h"
 #define RESWORDMAX 13
-char reswords[RESWORDMAX][10] =
-  {
-  "BEGIN","CALL","CONST","DO","END","IF","PROCEDURE",
-  "PROGRAM","READ","THEN","VAR","WHILE","WRITE"
-  };
-int isResword(char *s)
+
+typedef struct {
+    char* word;
+    int symValue;
+} ReservedWord;
+
+ReservedWord reswords[RESWORDMAX] = {
+    {"BEGIN",     symBEGIN},
+    {"CALL",      symCALL},
+    {"CONST",     symCONST},
+    {"DO",        symDO},
+    {"END",       symEND},
+    {"IF",        symIF},
+    {"PROCEDURE", symPROCEDURE},
+    {"PROGRAM",   symPROGRAM},
+    {"READ",      symREAD},
+    {"THEN",      symTHEN},
+    {"VAR",       symVAR},
+    {"WHILE",     symWHILE},
+    {"WRITE",     symWRITE}
+};
+
+int ResOrIdent(char *s)
 {
-  int i;
-  for (i=0; i<RESWORDMAX; i++)
+  for (int i=0; i<RESWORDMAX; i++)
   {
-    if (strcmp(s, reswords[i])==0) return i;
+    if (strcmp(s, reswords[i].word)==0) return reswords[i].symValue;
   }
+  return symIDENTIFIER;
+}
+
+int isResword(int sym)
+{
+  for (int i=0; i<RESWORDMAX; i++)
+  {
+    if(sym==reswords[i].symValue)
+    {
+      return 1;
+    }
+  }
+
   return -1;
 }
+
+#endif // RESWORD_H

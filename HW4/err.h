@@ -1,5 +1,5 @@
 /************************ err.h **********************/
-#define ERRMAX 27
+#define ERRMAX 30
 char errmsgs[ERRMAX][36]=
 {
   "必須跟著句點.",              /*errmsgs[0] */
@@ -15,7 +15,7 @@ char errmsgs[ERRMAX][36]=
   "遺漏BEGIN",                  /*errmsgs[10]*/
   "遺漏END",                    /*errmsgs[11]*/
   "遺漏IF",                     /*errmsgs[12]*/
-  "遺漏THEN",                   /*errmsgs[12]*/
+  "遺漏THEN",                   /*errmsgs[13]*/
   "遺漏WHILE",                  /*errmsgs[14]*/
   "WHILE敘述錯誤,遺漏DO",       /*errmsgs[15]*/
   "遺漏READ",                   /*errmsgs[16]*/
@@ -28,5 +28,8 @@ char errmsgs[ERRMAX][36]=
   "飛越至下一個敘述",           /*errmsgs[23]*/
   "CONST宣告常數重複",          /*errmsgs[24]*/
   "VAR宣告變數重複",            /*errmsgs[25]*/
-  "識別字沒有宣告"              /*errmsgs[26]*/
+  "識別字沒有宣告",           /*errmsgs[26]*/
+  "遺漏識別字或數字",            /*errmsgs[27]*/
+  "數學運算子錯誤",           /*errmsgs[28]*/
+  "CONST變數不能被改變"         /*errmsgs[29]*/
 };

@@ -6,7 +6,6 @@
 ** �ۭq���Y��
 */
   #include "scanner.h"
-  #include "resword.h"
   #include "err.h"
   #include "followsym.h"
   #include "idobj.h"
@@ -352,7 +351,7 @@
 */
   void Statement()
   {
-    if (isResword(token->value) != -1)
+    if (isResword(token->sym) != -1)
     {
       if (strcmp(token->value,"IF")==0)
         IfStatement();
@@ -385,6 +384,10 @@
     //     idobj->procname, token->value);    
     // }    
     Identifier();
+    if(idobj != NULL && idobj->attr == symCONST)
+    {
+      Error(29);
+    }
     if (token->sym == symBECOMES)
     {
       token = nextToken();
@@ -429,12 +432,14 @@
     if (strcmp(token->value,"BEGIN")==0)
     {
       token = nextToken();
+      printf("begin before statement\n"); // TODO : delete
       Statement();
       while (token->sym == symSEMI)
       {
         token = nextToken();
         Statement();
       }
+      printf("begin after statement\n"); // TODO : delete
       if (strcmp(token->value,"END")==0)
         token = nextToken();
       else
@@ -511,7 +516,8 @@
       else
       {
         Error(15);
-        skip(statement, 23);
+        skip(expression, 23);
+        Statement();
       }
     //   sprintf(buf, "_go%d:\n", tail);
     //   fprintf(outfile, buf);
@@ -732,7 +738,7 @@
     else
     {
       Error(20);
-      skip(statement, 23);
+      skip(condition, 23);
     }
   }
 /*
@@ -745,7 +751,9 @@
     {
       token = nextToken();
     }
-    Term();
+    Term(); 
+    // TODO : 要從這邊下手，看是不是要把 Term, Factor 改成回傳值是 boolean, 這樣就可以判斷 Term, Factor
+    // 有沒有 Parser 成功，進而決定要不要將接下來的輸入消耗掉直到遇到可以的 follow ( "THEN" )
     while (token->sym == symPLUS ||
            token->sym == symMINUS)
     {
@@ -796,6 +804,11 @@
     //                  "\tPUSH\tAX\n");
     //   }
     }
+    // if(term[token->sym] != 1)
+    // {
+    //   Error(28);
+    //   skip(term, 23);
+    // }
   }
 /*
 ** �y�k�W�h#19 <Factor>
@@ -830,6 +843,11 @@
         Error(18);
         skip(factor, 23);
       }
+    }
+    else
+    {
+      Error(27);
+      skip(factor, 23);
     }
   }
 /*

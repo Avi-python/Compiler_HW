@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "sym.h"
 #include "symbol.h"
+#include "resword.h"
 int nextChar;
 int cp = 0;
 int linelen = 0;
@@ -51,7 +52,7 @@ struct symbolTag *nextToken()
                nextChar >= 'A' && nextChar <= 'Z' ||
                nextChar>='0' && nextChar<='9');
       s[n]='\0';
-      return newSymbol(symIDENTIFIER,linenum,cp,s);
+      return newSymbol(ResOrIdent(s),linenum,cp,s);
     }
     else if (nextChar>='0' && nextChar<='9')
     {
