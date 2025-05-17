@@ -55,6 +55,7 @@ void followsyminit()
   expression[symGEQ] = 1;
   condition[symTHEN] = 1;
   condition[symDO] = 1;
+  condition[symSEMI] = 1;
   statement[symPERIOD] = 1;
   statement[symSEMI] = 1;
   statement[symEND] = 1;

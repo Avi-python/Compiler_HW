@@ -19,14 +19,14 @@
 /*
 ** �ۭq�禡�쫬
 */
-  void Identifier();
-  void Number();
+  int Identifier();
+  int Number();
   void IdentifierList();
-  void Expression();
-  void ExprPr();
-  void Term();
-  void TermPr();
-  void Factor();
+  int Expression();
+  int ExprPr();
+  int Term();
+  int TermPr();
+  int Factor();
   void Condition();
   void WriteStatement();
   void ReadStatement();
@@ -734,7 +734,11 @@ void StatementList()
     {
       int operator = token->sym;
       token = nextToken();
-      Expression();
+      int expr = Expression();
+      if(expr == -1)
+      {
+        skip(condition, 23);
+      }
     //   sprintf(buf, "\tPOP\tBX\n"
     //                "\tPOP\tAX\n"
     //                "\tCMP\tAX, BX\n");
@@ -776,74 +780,84 @@ void StatementList()
 /*
 ** �y�k�W�h#17 <Expression>
 */
-  void Expression()
+  int Expression()
   {
-    Term();
-    ExprPr();
+    int term = Term();
+    int expr_pr = ExprPr();
+    if(term == 1 && expr_pr == 1) return 1;
+    return -1;
   }
 
 /*
 ** <ExprPr>
 */
 
-void ExprPr()
+int ExprPr()
 {
   if(token->sym == symPLUS ||
          token->sym == symMINUS)
   {
     int operator = token->sym;
     token = nextToken();
-    Term();
-    ExprPr();
+    int term = Term();
+    int expr_pr = ExprPr();
+    if(term == 1 && expr_pr == 1) return 1;
+    return -1;
   }
   else if(expression[token->sym] == 1)
   {
-    return;
+    return 1;
   }
   else
   {
     Error(28);
     skip(expression, 23);
+    return -1;
   }
 }
 
 /*
 ** �y�k�W�h#18 <Term>
 */
-void Term()
+int Term()
 {
-    Factor();
-    TermPr();
+  int factor = Factor();
+  int term_pr = TermPr();
+  if(factor == 1 && term_pr == 1) return 1;
+  return -1;
 }
 
 /*
 ** <TermPr>
 */
-void TermPr()
+int TermPr()
 {
   if(token->sym == symMUL ||
          token->sym == symDIV)
   {
     int operator = token->sym;
     token = nextToken();
-    Factor();
-    TermPr();
+    int factor = Factor();
+    int term_pr = TermPr();
+    if(factor == 1 && term_pr == 1) return 1;
+    return -1;
   }
   else if(term[token->sym] == 1)
   {
-    return;
+    return 1;
   }
   else
   {
     Error(28);
     skip(term, 23);
+    return -1;
   }
 }
 
 /*
 ** �y�k�W�h#19 <Factor>
 */
-void Factor()
+int Factor()
 {
   int operator;
   if(token->sym == symMINUS || token->sym == symPLUS)
@@ -865,54 +879,74 @@ void Factor()
     {
       Error(31);
       skip(factor, 23);
+      return -1;
     }
+    return 1;
   }
   else if(token->sym == symNUMBER)
   {
-    Number();
+    return Number();
   }
   else if(token->sym == symLPAREN)
   {
     token = nextToken();
-    Expression();
-    if(token->sym == symRPAREN)
+    int expr = Expression();
+    if(expr == 1 && token->sym == symRPAREN)
+    {
       token = nextToken();
+      return 1;
+    }
     else
     {
       Error(18);
       skip(expression, 23);
+      return -1;
     }
   }
   else
   {
     Error(27);
     skip(factor, 23);
+    return -1;
   }
 }
 /*
 ** �ѧO�r�ŰO�B�z
 */
-  void Identifier()
+  int Identifier()
   {
     if (token->sym == symIDENTIFIER)
     {
       idobj=getIdobj(procStack[procTop-1],token->value);
       if (idobj == NULL)
-        Error(26);
+      {
+        Error(26); // TODO 這邊算是例外狀況
+        return -1;
+      }
       token = nextToken();
+      return 1;
     }
     else
+    {
       Error(21);
+      return -1;
+    }
   }
 /*
 ** �Ʀr�ŰO�B�z
 */
-  void Number()
+  int Number()
   {
     if (token->sym == symNUMBER)
+    {
       token = nextToken();
+      return 1;
+    }
     else
+    {
       Error(22);
+      return -1;
+    }
   }
 /*
 ****************************** �D�{�� **********************
