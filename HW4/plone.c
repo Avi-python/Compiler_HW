@@ -22,9 +22,11 @@
   void Identifier();
   void Number();
   void IdentifierList();
-  void Factor();
-  void Term();
   void Expression();
+  void ExprPr();
+  void Term();
+  void TermPr();
+  void Factor();
   void Condition();
   void WriteStatement();
   void ReadStatement();
@@ -33,6 +35,7 @@
   void CompoundStatement();
   void CallStatement();
   void AssignmentStatement();
+  void StatementList();
   void Statement();
   void ProcDeclaration();
   void VarDeclaration();
@@ -346,30 +349,66 @@
       --procTop;
     }
   }
+
+/*
+** <StatementList>
+*/
+void StatementList()
+{
+  if(token->sym == symIF || token->sym == symBEGIN || token->sym == symWHILE
+  || token->sym == symREAD || token->sym == symWRITE || token->sym == symCALL
+  || token->sym == symIDENTIFIER || token->sym == symSEMI)
+  {
+    Statement();
+    if(token->sym == symSEMI)
+    {
+      token = nextToken();
+    }
+    else
+    {
+      Error(6);
+    }
+    StatementList();
+  }
+  else if(token->sym == symEND)
+  {
+    return;
+  }
+  else
+  {
+    Error(32);
+    skip(statement, 23);
+  }
+}
+
 /*
 ** �y�k�W�h#7 <Statement>
 */
   void Statement()
   {
-    if (isResword(token->sym) != -1)
-    {
-      if (strcmp(token->value,"IF")==0)
-        IfStatement();
-      else if (strcmp(token->value,"BEGIN")==0)
-        CompoundStatement();
-      else if (strcmp(token->value,"WHILE")==0)
-        WhileStatement();
-      else if (strcmp(token->value,"READ")==0)
-        ReadStatement();
-      else if (strcmp(token->value,"WRITE")==0)
-        WriteStatement();
-      else if (strcmp(token->value,"CALL")==0)
-        CallStatement();
-    }
+    if (token->sym == symIF)
+      IfStatement();
+    else if (token->sym == symBEGIN)
+      CompoundStatement();
+    else if (token->sym == symWHILE)
+      WhileStatement();
+    else if (token->sym == symREAD)
+      ReadStatement();
+    else if (token->sym == symWRITE)
+      WriteStatement();
+    else if (token->sym == symCALL)
+      CallStatement();
     else if (token->sym == symIDENTIFIER)
       AssignmentStatement();
+    else if (token->sym == symSEMI) // epsilon production
+    {
+      return;
+    }
     else
+    {
+      Error(31);
       skip(statement, 23);
+    }
   }
 /*
 ** �y�k�W�h#8 <AssignmentStatement>
@@ -432,14 +471,7 @@
     if (strcmp(token->value,"BEGIN")==0)
     {
       token = nextToken();
-      printf("begin before statement\n"); // TODO : delete
-      Statement();
-      while (token->sym == symSEMI)
-      {
-        token = nextToken();
-        Statement();
-      }
-      printf("begin after statement\n"); // TODO : delete
+      StatementList();
       if (strcmp(token->value,"END")==0)
         token = nextToken();
       else
@@ -746,110 +778,117 @@
 */
   void Expression()
   {
-    if (token->sym == symPLUS ||
-        token->sym == symMINUS)
-    {
-      token = nextToken();
-    }
-    Term(); 
-    // TODO : 要從這邊下手，看是不是要把 Term, Factor 改成回傳值是 boolean, 這樣就可以判斷 Term, Factor
-    // 有沒有 Parser 成功，進而決定要不要將接下來的輸入消耗掉直到遇到可以的 follow ( "THEN" )
-    while (token->sym == symPLUS ||
-           token->sym == symMINUS)
-    {
-      int operator = token->sym;
-      token = nextToken();
-      Term();
-    //   if (operator == symPLUS)
-    //   {
-    //     fprintf(outfile,"\tPOP\tBX\n"
-    //                 "\tPOP\tAX\n"
-    //                 "\tADD\tAX, BX\n"
-    //                 "\tPUSH\tAX\n");
-    //   }
-    //   else
-    //   {
-    //     fprintf(outfile, "\tPOP\tBX\n"
-    //                  "\tPOP\tAX\n"
-    //                  "\tSUB\tAX, BX\n"
-    //                  "\tPUSH\tAX\n");
-    //   }
-    }
+    Term();
+    ExprPr();
   }
+
+/*
+** <ExprPr>
+*/
+
+void ExprPr()
+{
+  if(token->sym == symPLUS ||
+         token->sym == symMINUS)
+  {
+    int operator = token->sym;
+    token = nextToken();
+    Term();
+    ExprPr();
+  }
+  else if(expression[token->sym] == 1)
+  {
+    return;
+  }
+  else
+  {
+    Error(28);
+    skip(expression, 23);
+  }
+}
+
 /*
 ** �y�k�W�h#18 <Term>
 */
-  void Term()
-  {
+void Term()
+{
     Factor();
-    while (token->sym == symMUL ||
-           token->sym == symDIV)
-    {
-      int operator = token->sym;
-      token = nextToken();
-      Factor();
-    //   if (operator == symMUL)
-    //   {
-    //     fprintf(outfile, "\tPOP\tBX\n"
-    //                  "\tPOP\tAX\n"
-    //                  "\tMUL\tBX\n"
-    //                  "\tPUSH\tAX\n");
-    //   }
-    //   else
-    //   {
-    //     fprintf(outfile, "\tPOP\tBX\n"
-    //                  "\tMOV\tDX, 0\n"
-    //                  "\tPOP\tAX\n"
-    //                  "\tDIV\tBX\n"
-    //                  "\tPUSH\tAX\n");
-    //   }
-    }
-    // if(term[token->sym] != 1)
-    // {
-    //   Error(28);
-    //   skip(term, 23);
-    // }
+    TermPr();
+}
+
+/*
+** <TermPr>
+*/
+void TermPr()
+{
+  if(token->sym == symMUL ||
+         token->sym == symDIV)
+  {
+    int operator = token->sym;
+    token = nextToken();
+    Factor();
+    TermPr();
   }
+  else if(term[token->sym] == 1)
+  {
+    return;
+  }
+  else
+  {
+    Error(28);
+    skip(term, 23);
+  }
+}
+
 /*
 ** �y�k�W�h#19 <Factor>
 */
-  void Factor()
+void Factor()
+{
+  int operator;
+  if(token->sym == symMINUS || token->sym == symPLUS)
   {
-    if (token->sym == symIDENTIFIER)
-    {
-      idobj=getIdobj(procStack[procTop-1],token->value);
-    //   if (idobj != NULL)
-    //   {
-    //     sprintf(id, "%s_%s",idobj->procname, token->value);
-    //     sprintf(buf, "\tPUSH\tWORD [%s]\n", id);
-    //     fprintf(outfile, buf);
-    //   }
-      Identifier();
-    }
-    else if (token->sym == symNUMBER)
-    {
-    //   sprintf(buf, "\tPUSH\t%s\n", token->value);
+    operator = token->sym;
+    token = nextToken();
+  }
+  if(token->sym == symIDENTIFIER)
+  {
+    idobj = getIdobj(procStack[procTop-1], token->value);
+    // if (idobj != NULL)
+    // {
+    //   sprintf(buf, "\tMOV\tAX, %s_%s\n",
+    //           idobj->procname, token->value);
     //   fprintf(outfile, buf);
-      Number();
-    }
-    else if (token->sym == symLPAREN)
+    // }
+    Identifier();
+    if(idobj != NULL && idobj->attr == symCONST)
     {
-      token = nextToken();
-      Expression();
-      if (token->sym == symRPAREN)
-        token = nextToken();
-      else
-      {
-        Error(18);
-        skip(factor, 23);
-      }
-    }
-    else
-    {
-      Error(27);
+      Error(31);
       skip(factor, 23);
     }
   }
+  else if(token->sym == symNUMBER)
+  {
+    Number();
+  }
+  else if(token->sym == symLPAREN)
+  {
+    token = nextToken();
+    Expression();
+    if(token->sym == symRPAREN)
+      token = nextToken();
+    else
+    {
+      Error(18);
+      skip(expression, 23);
+    }
+  }
+  else
+  {
+    Error(27);
+    skip(factor, 23);
+  }
+}
 /*
 ** �ѧO�r�ŰO�B�z
 */

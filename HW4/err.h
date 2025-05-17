@@ -1,5 +1,5 @@
 /************************ err.h **********************/
-#define ERRMAX 30
+#define ERRMAX 34
 char errmsgs[ERRMAX][36]=
 {
   "必須跟著句點.",              /*errmsgs[0] */
@@ -31,5 +31,8 @@ char errmsgs[ERRMAX][36]=
   "識別字沒有宣告",           /*errmsgs[26]*/
   "遺漏識別字或數字",            /*errmsgs[27]*/
   "數學運算子錯誤",           /*errmsgs[28]*/
-  "CONST變數不能被改變"         /*errmsgs[29]*/
+  "CONST變數不能被改變",         /*errmsgs[29]*/
+  "運算式錯誤",            /*errmsgs[30]*/   
+  "運算元型別錯誤",          /*errmsgs[31]*/
+  "StatementList 錯誤",     /*errormsgs[32]*/
 };

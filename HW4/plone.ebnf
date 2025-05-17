@@ -10,13 +10,15 @@
 
 <ProcDeclaration> ::= {PROCEDURE <Identifier>;<Block>;} 
 
-<Statement> ::= [<AssignmentStatement> | <CallStatement> | <CompoundStatement> | <IfStatement> | <WhileStatement>]  |  <ReadStatement> | <WriteStatement>            
+<Statement> ::= [<AssignmentStatement> | <CallStatement> | <CompoundStatement> | <IfStatement> | <WhileStatement> | <ReadStatement> | <WriteStatement> ]  
 
 <AssignmentStatement> ::= <Identifier> := <Expression>                  
 
 <CallStatement> ::= CALL <Identifier>            
 
-<CompoundStatement> ::= BEGIN <Statement>{;<Statement>} END           
+<CompoundStatement> ::= BEGIN <StatementList> END
+
+<StatementList> ::= [ <Statement> ; <StatementList> ]
 
 <IfStatement> ::= IF <Condition> THEN <Statement>               
 
@@ -30,11 +32,15 @@
 
 <Condition> ::= <Expression> \<|<=|=|<>|>|>=\ <Expression>                 
 
-<Expression> ::= [+|-] <Term> { \+|-\ <Term> }        
+<Expression> ::= <Term> <ExprPr>
 
-<Term> :: = <Factor> { \ *|/ \ <Factor> }             
+<ExprPr> ::= [ + <Term> <ExprPr> | - <Term> <ExprPr> ]
 
-<Factor> ::= <Identifier>|<Number>| (<Expression>)                      
+<Term> ::= <Factor> <TermPr>
+
+<TermPr> ::= [ * <Factor> <TermPr> | / <Factor> <TermPr> ]
+
+<Factor> ::= [ + | - ] ( <Identifier> | <Number> | '(' <Expression> ')' )
 
 <Identifier> ::= <Alpha> { <Alpha> | <Digit> }        
 
