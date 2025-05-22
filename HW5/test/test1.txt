@@ -1,0 +1,13 @@
+void main()
+{
+    int upper, bottom, high, area;
+
+    upper=10;
+    bottom=20
+    high=10;
+    while (bottom>upper)
+    {
+       if (upper>0) area=(upper+bottom)*high/2;
+       upper=upper+1;
+    }
+}

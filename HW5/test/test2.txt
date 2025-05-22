@@ -1,0 +1,18 @@
+void main()
+{
+    in a, b, temp;
+    a=36;
+    b=60;
+    if (b>a
+    {
+       temp=a;
+       a=b;
+       b=temp;
+    }
+    while (b!=0)
+    {
+       temp=a%b;
+       a=b
+       b=temp;
+    }
+}
