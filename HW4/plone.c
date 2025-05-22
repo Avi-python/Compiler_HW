@@ -67,7 +67,7 @@
   {
     int j;
     printf("****");
-    for (j=0; j<=token->right; j++) printf(" ");
+    for (j=0; j<token->right; j++) printf(" ");
     printf("^%d  %s\n",n, errmsgs[n]);
     errorCount++;
   }
@@ -920,8 +920,7 @@ int Factor()
       idobj=getIdobj(procStack[procTop-1],token->value);
       if (idobj == NULL)
       {
-        Error(26); // TODO 這邊算是例外狀況
-        return -1;
+        Error(26); // TODO 這邊算是例外狀況，語法沒有錯誤
       }
       token = nextToken();
       return 1;
@@ -960,8 +959,8 @@ int Factor()
     Program();
     // fprintf(outfile, "\tMOV\tAX, 4C00H\n"
     //              "\tINT\t21H\n");
-    // printf("\n  Plone compile completed. "
-    //   "\n  Error count : %d\n", errorCount);
+    printf("\n  Plone compile completed. "
+      "\n  Error count : %d\n", errorCount);
     // if (argc==3)
     // {
     //   printf("\n�{�ǵ��c���|���e�p�U�G\n%s\n",

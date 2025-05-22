@@ -4,6 +4,6 @@ BEGIN
   a := 5;
   b := 2;
   IF a>b c:=a;
-  IF a==c THEN c=b; 
+  IF a==c; THEN c=b; 
   WRITE(c);
 END.
