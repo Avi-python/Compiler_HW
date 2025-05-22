@@ -17,7 +17,7 @@ extern char* yytext; // Make yytext available for error reporting
 }
 
 // Keywords
-%token VOID MAIN INT IF WHILE
+%token VOID MAIN INT IF WHILE ERROR
 
 // Literals and Identifiers
 %token <sval> IDENTIFIER
@@ -85,6 +85,10 @@ AssignmentStatement:
     | IDENTIFIER ASSIGN Expression error { 
         yyerrok; 
     }
+    | IDENTIFIER ASSIGN error SEMICOLON { 
+        yyerror("Invalid expression in assignment");
+        yyerrok; 
+    }
     ;
 
 IfStatement:
@@ -127,7 +131,7 @@ AddTermList:
     ;
 
 AddOp:
-    PLUS
+    PLUS 
     | MINUS
     ;
 

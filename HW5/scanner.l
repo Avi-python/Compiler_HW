@@ -17,6 +17,8 @@ int yycolumn = 1;
     yylloc.last_column = yycolumn + yyleng - 1; \
     yycolumn += yyleng;
 
+extern void yyerror(char *s);
+
 // It's good practice to declare yylval if it's not implicitly declared by Bison's header.
 // However, parser.tab.h should define it.
 // extern YYSTYPE yylval; 
@@ -74,7 +76,12 @@ NUMBER   {DIGIT}+
 <COMMENT>\n       { /* Eat newline in comment, yylineno++; if counting lines */ }
 
 
-.                 { fprintf(stderr, "Lexical error: Unexpected character '%c'\n", *yytext); /* Or return an ERROR token */ }
+.                 { 
+    char msg[100];
+    sprintf(msg, "Unexpected character '%s'", yytext);
+    yyerror(msg); /* Or return an ERROR token */ 
+    return ERROR;
+}
 
 %%
 
