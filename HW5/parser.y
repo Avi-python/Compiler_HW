@@ -7,8 +7,11 @@
 
 
 int yylex(void);
+int error_count = 0;
 void yyerror(const char *s);
 extern char* yytext; // Make yytext available for error reporting
+extern FILE *yyin; // Input file pointer
+
 %}
 
 %union {
@@ -40,7 +43,7 @@ extern char* yytext; // Make yytext available for error reporting
 %%
 
 Program:
-    VOID MAIN LPAREN RPAREN CompoundStatement { printf("Parsing successful: Program recognized.\n"); }
+    VOID MAIN LPAREN RPAREN CompoundStatement {  }
     ;
 
 CompoundStatement:
@@ -55,7 +58,7 @@ OptionalDeclaration:
 Declaration:
     INT IdentList SEMICOLON 
     | error IdentList SEMICOLON { 
-        yyerror("Invalid declaration"); 
+        // yyerror("Invalid declaration"); 
         yyerrok; 
     }
     ;
@@ -93,8 +96,8 @@ AssignmentStatement:
 
 IfStatement:
     IF LPAREN Condition RPAREN Statement
-    | IF LPAREN Condition error Statement {
-        yyerror("Invalid if statement");
+    | IF error Statement {
+        // yyerror("Invalid if statement");
         yyerrok;
     }
     ;
@@ -161,12 +164,33 @@ Factor:
 
 %%
 
-void yyerror(const char *s) {
+void yyerror(const char *s) 
+{
+    error_count++;
     fprintf(stderr, "error: %d:%d (Near token: '%s'): %s\n", 
             yylloc.first_line, yylloc.first_column, yytext, s);
 }
 
 int main(int argc, char **argv) 
 {
-    return yyparse();
+    if (argc > 1) {
+        yyin = fopen(argv[1], "r");
+        if (!yyin) {
+            perror(argv[1]); // Print system error message if fopen fails
+            return 1;
+        }
+    } else {
+        printf("No input file specified. Reading from stdin.\n");
+        yyin = stdin; // Default to standard input
+    }
+
+    yyparse();
+
+    if(error_count > 0) {
+        printf("Parsing completed with %d errors.\n", error_count);
+    } else {
+        printf("Parsing completed successfully.\n");
+    }
+
+    return 0;
 }

@@ -1,0 +1,16 @@
+void main()
+{
+    in = a, b, temp;
+    a=36;
+    b=60;
+    if (b>a
+    {
+       temp=a;
+       a=b;
+       b=temp;
+    }
+    while(a > c)
+    {
+
+    }
+}

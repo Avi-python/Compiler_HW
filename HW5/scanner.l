@@ -80,7 +80,6 @@ NUMBER   {DIGIT}+
     char msg[100];
     sprintf(msg, "Unexpected character '%s'", yytext);
     yyerror(msg); /* Or return an ERROR token */ 
-    return ERROR;
 }
 
 %%
