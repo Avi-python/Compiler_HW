@@ -7,8 +7,8 @@ FLEX = flex
 
 # Source files (as provided by the user)
 # Assuming parser.c is the Bison grammar file and scanner.c is the Flex lexical analyzer file.
-BISON_SRC = /home/avibun/Programming/CPP/Compiler_HW/HW5/parser.y
-FLEX_SRC = /home/avibun/Programming/CPP/Compiler_HW/HW5/scanner.l
+BISON_SRC = parser.y
+FLEX_SRC = scanner.l
 
 # Generated files
 PARSER_C_OUT = parser.tab.c
